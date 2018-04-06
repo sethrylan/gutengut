@@ -1,0 +1,17 @@
+{
+  "name": "guten-snippet",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "exit 1",
+    "deploy-production": "node bin/deploy.js"
+  },
+  "author": "Seth Rylan Gainey",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "2.1.2",
+    "adm-zip": "^0.4.7",
+    "aws-sdk": "^2.119.0"
+  }
+}
