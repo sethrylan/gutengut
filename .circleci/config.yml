@@ -25,7 +25,7 @@ jobs:
       #     working_directory: unit_tests
 
       - run: yarn install
-        working_directory: guten-snippet
+          working_directory: guten-snippet
 
 
       # - save_cache:
@@ -36,8 +36,5 @@ jobs:
 
       # run tests!
       - run: yarn test
-        working_directory: guten-snippet
-
-
-
+          working_directory: guten-snippet
 
