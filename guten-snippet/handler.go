@@ -1,13 +1,13 @@
 package main
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	"errors"
 	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
 	"net/http"
-	"os"
-	"strconv"
+	// "os"
+	// "strconv"
 )
 
 var (
@@ -37,7 +37,7 @@ func Handler(request Request) (string, error) {
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return []Movie{}, ErrorBackend
+		return "", ErrorBackend
 	}
 
 	// if request.ID > 0 {
@@ -57,7 +57,7 @@ func Handler(request Request) (string, error) {
 	//   return []Movie{}, ErrorBackend
 	// }
 
-	return resp.Body, nil
+	return string(resp.Body), nil
 }
 
 func main() {
