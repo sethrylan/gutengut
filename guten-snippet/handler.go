@@ -1,22 +1,22 @@
 package main
 
 import (
-  "encoding/json"
-  "errors"
-  "fmt"
-  "net/http"
-  "os"
-  "strconv"
-  "github.com/aws/aws-lambda-go/lambda"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/aws/aws-lambda-go/lambda"
+	"net/http"
+	"os"
+	"strconv"
 )
 
 var (
-  // API_KEY      = os.Getenv("API_KEY")
-  ErrorBackend = errors.New("Something went wrong")
+	// API_KEY      = os.Getenv("API_KEY")
+	ErrorBackend = errors.New("Something went wrong")
 )
 
 type Request struct {
-  // ID int `json:"id"`
+	// ID int `json:"id"`
 }
 
 // type MovieDBResponse struct {
@@ -31,35 +31,35 @@ type Request struct {
 // }
 
 func Handler(request Request) (string, error) {
-  url := fmt.Sprintf("http://sethrylan.org/adventures.txt")
+	url := fmt.Sprintf("http://sethrylan.org/adventures.txt")
 
-  client := &http.Client{}
+	client := &http.Client{}
 
-  req, err := http.NewRequest("GET", url, nil)
-  if err != nil {
-    return []Movie{}, ErrorBackend
-  }
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return []Movie{}, ErrorBackend
+	}
 
-  // if request.ID > 0 {
-  //   q := req.URL.Query()
-  //   q.Add("with_genres", strconv.Itoa(request.ID))
-  //   req.URL.RawQuery = q.Encode()
-  // }
+	// if request.ID > 0 {
+	//   q := req.URL.Query()
+	//   q.Add("with_genres", strconv.Itoa(request.ID))
+	//   req.URL.RawQuery = q.Encode()
+	// }
 
-  resp, err := client.Do(req)
-  if err != nil {
-    return "", ErrorBackend
-  }
-  defer resp.Body.Close()
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", ErrorBackend
+	}
+	defer resp.Body.Close()
 
-  // var data MovieDBResponse
-  // if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
-  //   return []Movie{}, ErrorBackend
-  // }
+	// var data MovieDBResponse
+	// if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+	//   return []Movie{}, ErrorBackend
+	// }
 
-  return resp.Body, nil
+	return resp.Body, nil
 }
 
 func main() {
-  lambda.Start(Handler)
+	lambda.Start(Handler)
 }
