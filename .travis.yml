@@ -1,0 +1,10 @@
+language: node_js
+script:
+- "./gradlew check"
+sudo: false
+branches:
+  only:
+  - master
+notifications:
+  email:
+  - seth@sethrylan.org
