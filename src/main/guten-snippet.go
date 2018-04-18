@@ -2,6 +2,7 @@ package main
 
 import (
 	// "encoding/json"
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -57,7 +58,10 @@ func Handler(request Request) (string, error) {
 	//   return []Movie{}, ErrorBackend
 	// }
 
-	return string(resp.Body), nil
+  buf := new(bytes.Buffer)
+  buf.ReadFrom(resp.Body)
+
+	return buf.String(), nil
 }
 
 func main() {
