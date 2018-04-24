@@ -1,81 +1,50 @@
-# .PHONY: build doc fmt lint run test vet
-
-GOPATH := ${PWD}
-export GOPATH
-
-default: build
-
-all: test build
-
-build: vet
-	go build -v -o ./bin/guten-snippet ./src/main
-
-doc:
-	godoc -http=:6060 -index
-
-# http://golang.org/cmd/go/#hdr-Run_gofmt_on_package_sources
-fmt:
-	go fmt main
-
-# https://github.com/golang/lint
-lint:
-	./bin/golint main
-
-run: build
-	./bin/guten-snippet
-
-test:
-	go test -cover -v ./test/...
-
-vet:
-	go vet main
-
-deps:
-	go get github.com/golang/lint/golint
-	go get github.com/haya14busa/goverage
-	go get github.com/aws/aws-lambda-go/lambda
-
-zip:
-	tar czvf guten-snippet.tar.gz --exclude=".DS_Store" Makefile readme.md ./src ./test
-
 # Go parameters
 # GOCMD=go
 # GOBUILD=$(GOCMD) build
 # GOCLEAN=$(GOCMD) clean
 # GOTEST=$(GOCMD) test
 # GOGET=$(GOCMD) get
-# BINARY_NAME=snippet
-# BINARY_UNIX=$(BINARY_NAME)_unix
+BINARY_NAME=snippet
+BINARY_UNIX=$(BINARY_NAME)_unix
+ARTIFACT_NAME=$(BINARY_NAME).zip
+FUNCTION_NAME=snipper
 
-# all: test build
-# build: vet
-# 	$(GOBUILD) -o $(BINARY_NAME) -v
-# # http://golang.org/cmd/go/#hdr-Run_gofmt_on_package_sources
-# fmt:
-# 	go fmt main
-# # https://github.com/golang/lint
-# lint:
-# 	./bin/golint main
-# vet:
-# 	go vet main
-# test:
-# 	$(GOTEST) -v ./...
-# clean:
-# 	$(GOCLEAN)
-# 	rm -f $(BINARY_NAME)
-# 	rm -f $(BINARY_UNIX)
-# run:
-# 	$(GOBUILD) -o $(BINARY_NAME) -v ./...
-# 	./$(BINARY_NAME)
-# deps:
-# 	$(GOGET) github.com/golang/lint/golint
-# 	$(GOGET) github.com/haya14busa/goverage
-# 	$(GOGET) github.com/aws/aws-lambda-go/lambda
-# 	$(GOGET) gopkg.in/urfave/cli.v1
-# 	$(GOGET) github.com/stretchr/testify/assert
+all: versionchk test build
 
-# # Cross compilation
-# build-linux:
-# 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BINARY_UNIX) -v
-# docker-build:
-# 	docker run --rm -it -v "$(GOPATH)":/go -w /go/src/bitbucket.org/rsohlich/makepost golang:latest go build -o "$(BINARY_UNIX)" -v
+build: vet lint
+	go build -o ./bin/$(BINARY_NAME) -v
+
+deploy: build-lambda
+	# aws cloudformation package --template-file template.yml --s3-bucket ${S3_BUCKET} --output-template-file packaged.yml
+	aws lambda update-function-code --zip-file=fileb://$(ARTIFACT_NAME) --region=$(AWS_DEFAULT_REGION) --function-name=$(FUNCTION_NAME)
+
+fmt:
+	go fmt *.go
+fmtchk:
+	diff -u <(echo -n) <(go fmt -d ./)
+lint:
+	$(GOPATH)/bin/golint
+vet:
+	go vet -v ./...
+test:
+	go test -v ./...
+clean:
+	go clean
+	rm -f $(BINARY_NAME)
+	rm -f $(BINARY_UNIX)
+run:
+	./bin/$(BINARY_NAME)
+deps:
+	go get github.com/golang/lint/golint
+	go get -t ./...
+versionchk:
+	@go version | grep --quiet "go version go1\.10\."
+
+# Cross compilation
+build-lambda: vet lint
+	GOOS=linux go build -o $(BINARY_NAME)
+	zip $(ARTIFACT_NAME) $(BINARY_NAME)
+build-linux:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $(BINARY_UNIX) -v
+docker-build:
+	docker run --rm -it -v "$(GOPATH)":/go -w /go/src/bitbucket.org/rsohlich/makepost golang:latest go build -o "$(BINARY_UNIX)" -v

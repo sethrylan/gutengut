@@ -1,35 +1,22 @@
 language: go
-
 go:
-  - 1.9
-  - tip 
-
+- 1.10
+- tip
+env:
+  global:
+  - AWS_DEFAULT_REGION=us-east-1
+  - secure: ThMmo2oXRbz3HFQS/rQWxrATHV7R9Fn3qNBMVm6RgnyNfwL1thk+vALp+45jRhuo731G24g+0JNimD7X5pJM12AetVVx5b72rE+v4bkIVXEpVnpxZhWUsG+tILmKwZOS1B7gkoqmbvGlgSflGOrMGVd5hLHkJFPNLrzYDK6nulqGZv9Uo7Bs2P7nzDaJeOvjFnppVhbx/eeG0F1noiuGQWaHO9DkPVZJMiUKvZo1y8VphRNLgyYdo3bpcHMmyBmekGU5sgdjKD8qUJLpEG2/bcKu/3nrvegRp1dqnUsLLQa60HtILAxlMHx3jnb3b/d49GKeHatkTJX4BgA7DdPGBCCWVzz0rMShCua1NJteYIMV8SdK9pBfzjbra3pUAtoGA56zLNYxdlDxTntUlv0POhxzfbw32G7t0av+tayzm14bP2Chg4OHHRPlJnz28Hn+/o7Yd1QOaw3cGAxvADqhaqFLESp71XhiprUtHw5OGu0rGkST6ZuwjiI7AgXRzjwHBQggifdSUt8NBquuiS9uV1s1GdMT4uNS6oD+hVZUTQ3VqbXVUpwxX8ZsO26YMKVmg6hOUVKaKWarP6UszKgU/O6WaCP5vhULuDmeFNQUXI65Rg2NmNuDXS+/q3Tx8Q+x7uZQngZkBTIYn56vBG1AVU7p1N8KchZm3x7Hfs2qBxo=
 before_install:
-    - curl -L -s https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 -o $GOPATH/bin/dep
-    - chmod +x $GOPATH/bin/dep
-
-install: 
-  - dep ensure
-  - go get github.com/golang/lint/golint
-  - go get github.com/haya14busa/goverage
-
+- pip install --user awscli
+install:
+- make deps
 matrix:
   allow_failures:
-    - go: tip
+  - go: tip
   fast_finish: true
-
 notifications:
   email: false
-
-before_script:
-  - PKGS=$(go list ./...)
-  - LINT_PKGS=$(go list ./... | grep -Ev 'aws-lambda-go/lambda')
-
 script:
-  - diff -u <(echo -n) <(gofmt -d ./)                              # Fail if a .go file hasn't been formatted with gofmt
-  - goverage -v -covermode=atomic -coverprofile=coverage.txt $PKGS # Run all tests with coverage 
-  - go vet -v ./...                                                # static analyisis
-  - golint $LINT_PKGS                                              # lint - ignore failures for now
-  
+- make versionchk test build-lambda
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash)
