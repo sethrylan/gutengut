@@ -20,6 +20,7 @@ env:
 
 before_install:
 - go version
+- echo $TRAVIS_GO_VERSION
 - pip install --user awscli
 
 install:
@@ -29,4 +30,4 @@ script:
 - make test build-lambda
 
 after_success:
-- if [[ $TRAVIS_GO_VERSION == 1.10.* ]]; then make deploy; fi
+- if [[ "$TRAVIS_GO_VERSION" == 1.10.* ]]; then make deploy; fi
