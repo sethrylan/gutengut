@@ -1,24 +1,32 @@
 language: go
+
 go:
 - 1.10.x   # Build project with stable version
 - tip      # and tip of golang development
+
+matrix:
+  allow_failures:
+  - go: tip
+  fast_finish: true
+
+notifications:
+  email: false
+
 env:
   global:
   - AWS_DEFAULT_REGION=us-east-1
   - secure: ThMmo2oXRbz3HFQS/rQWxrATHV7R9Fn3qNBMVm6RgnyNfwL1thk+vALp+45jRhuo731G24g+0JNimD7X5pJM12AetVVx5b72rE+v4bkIVXEpVnpxZhWUsG+tILmKwZOS1B7gkoqmbvGlgSflGOrMGVd5hLHkJFPNLrzYDK6nulqGZv9Uo7Bs2P7nzDaJeOvjFnppVhbx/eeG0F1noiuGQWaHO9DkPVZJMiUKvZo1y8VphRNLgyYdo3bpcHMmyBmekGU5sgdjKD8qUJLpEG2/bcKu/3nrvegRp1dqnUsLLQa60HtILAxlMHx3jnb3b/d49GKeHatkTJX4BgA7DdPGBCCWVzz0rMShCua1NJteYIMV8SdK9pBfzjbra3pUAtoGA56zLNYxdlDxTntUlv0POhxzfbw32G7t0av+tayzm14bP2Chg4OHHRPlJnz28Hn+/o7Yd1QOaw3cGAxvADqhaqFLESp71XhiprUtHw5OGu0rGkST6ZuwjiI7AgXRzjwHBQggifdSUt8NBquuiS9uV1s1GdMT4uNS6oD+hVZUTQ3VqbXVUpwxX8ZsO26YMKVmg6hOUVKaKWarP6UszKgU/O6WaCP5vhULuDmeFNQUXI65Rg2NmNuDXS+/q3Tx8Q+x7uZQngZkBTIYn56vBG1AVU7p1N8KchZm3x7Hfs2qBxo=
   - secure: RZH9Pj980wB19lOPpkQBblVhBAPDfdzFAOur08/iKwXsoWIfMV6mx3MucRlGmXtaV0BOV4PddSCLfyBHAuEY57Hg75246iL63nz+I/80JLDZmnV0V2SNF8HTUzJpwLgoG/4eyLe/infHeybapLgtnhWlhA4YpahAWVzIgqxBVG6ijSoGBStK0Yk+i8EnhmPaQj7dhXV352S+oeFusVuA4Y07G//zW0MFW5jtwE5vN/2Hrsx2iPT7jzttQbKSwiiVsdfHTfQS4HQocIgR+XQdwpMJIzKM2lYnPxFFS9rhS2fc1VMkaobMRcjAMUGV74IbUNLX/Jii+r82E1gCEU1lcLyTOgGfZ9sEJLEphUSP7z9Bv3440T77fVzCY6qqL7KGJnBsB0m9HBzMYxwugOYqjPz5Pb3cRAb2if2d7kO8eXgv5y8LsOnUxE7p5VLEmmkzozzuyRgxT6qg189RZGU1YZTcTzl5hMfbLVD1Hwfu6jDjUYVAX4ms44wOD3mjTbQEc2WSN+YorB+fS/8gHtUqf+E7v+/sPZNxC62Zh5zVI8yLBWrmwvURHGySb5qTuJ70Gou4cs9by4AlPsbG0C8wVKWzum1/OYQ22Zt5j8Rjd52KDuGyCB0dMHyRVbbL3QZiH1BSA9Loj+R5yQETbHFVulOvoRBGM+iBEDR0g+lneDk=
+
 before_install:
 - go version
 - pip install --user awscli
+
 install:
 - make deps
-matrix:
-  allow_failures:
-  - go: tip
-  fast_finish: true
-notifications:
-  email: false
+
 script:
 - make test build-lambda
+
 after_success:
 - if [[ $TRAVIS_GO_VERSION == 1.10.* ]]; then make deploy; fi
