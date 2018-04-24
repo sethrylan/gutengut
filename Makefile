@@ -9,7 +9,7 @@ BINARY_UNIX=$(BINARY_NAME)_unix
 ARTIFACT_NAME=$(BINARY_NAME).zip
 FUNCTION_NAME=snipper
 
-all: versionchk test build
+all: test build
 
 build: vet lint
 	go build -o ./bin/$(BINARY_NAME) -v
@@ -37,8 +37,6 @@ run:
 deps:
 	go get github.com/golang/lint/golint
 	go get -t ./...
-versionchk:
-	@go version | grep --quiet "go version go1\.10\."
 
 # Cross compilation
 build-lambda: vet lint
