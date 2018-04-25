@@ -2,12 +2,11 @@ AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 Resources:
   snippet:
-    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: guten-snippet
       Description: Retrieves a book snippet
-      Handler: bin/guten-snippet
+      Handler: dist/guten-snippet
       Runtime: go1.x
       Tracing: Active
       Events:
