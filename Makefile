@@ -7,7 +7,7 @@
 BINARY_NAME=snippet
 BINARY_UNIX=$(BINARY_NAME)_unix
 ARTIFACT_NAME=$(BINARY_NAME).zip
-FUNCTION_NAME=snippet
+FUNCTION_NAME=guten-snippet
 
 all: test build
 
@@ -16,7 +16,7 @@ build: vet lint
 
 deploy: build-lambda
 	# aws cloudformation package --template-file template.yml --s3-bucket ${S3_BUCKET} --output-template-file packaged.yml
-	aws lambda update-function-code --zip-file=fileb://$(ARTIFACT_NAME) --region=$(AWS_DEFAULT_REGION) --function-name=$(FUNCTION_NAME)
+	aws lambda update-function-code --zip-file=fileb://$(ARTIFACT_NAME) --function-name=$(FUNCTION_NAME)
 
 fmt:
 	go fmt *.go
