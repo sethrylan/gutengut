@@ -7,7 +7,7 @@
 BINARY_NAME=snippet
 BINARY_UNIX=$(BINARY_NAME)_unix
 ARTIFACT_NAME=$(BINARY_NAME).zip
-FUNCTION_NAME=snipper
+FUNCTION_NAME=snippet
 
 all: test build
 
