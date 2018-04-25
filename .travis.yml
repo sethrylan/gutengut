@@ -19,6 +19,6 @@ before_install:
 install:
 - make deps
 script:
-- make test build-lambda
+- make test 
 after_success:
-- if [[ "$TRAVIS_GO_VERSION" == 1.10.* ]]; then make deploy; fi
+- if [[ "$TRAVIS_GO_VERSION" == 1.10.* ]]; then make package deploy; fi

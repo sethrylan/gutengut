@@ -22,8 +22,8 @@ build: vet lint
 
 clean:
 	go clean
-	@rm package.yml
-	@rm guten-snippet.zip
+	@rm -f package.yml
+	@rm -f guten-snippet.zip
 	@rm -rf dist
 
 ###### AWS Deployment ######
