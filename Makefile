@@ -6,6 +6,14 @@ AWS_BUCKET_NAME=gutengut
 AWS_STACK_NAME=gutengut
 AWS_REGION=us-east-1
 
+all: test build
+
+build: vet lint
+	go build -o ./dist/$(BINARY_NAME) -v
+# 	@for dir in `ls handler`; do \
+# 		GOOS=linux go build -o dist/handler/$$dir github.com/sbstjn/go-lambda-example/handler/$$dir; \
+# 	done
+
 clean:
 	go clean
 	@rm -f package.yml
@@ -55,9 +63,7 @@ deps:
 
 # Cross compilation
 build-lambda: clean vet lint
-	@for dir in `ls handler`; do \
-		GOOS=linux go build -o dist/handler/$$dir handler/$$dir -v;\
-	done
+	GOOS=linux go build -o dist/$(BINARY_NAME)
 	zip $(ARTIFACT_NAME) dist/*
 build-linux: clean
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/$(BINARY_UNIX) -v
