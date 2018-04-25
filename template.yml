@@ -6,7 +6,7 @@ Resources:
     Properties:
       FunctionName: guten-snippet
       Description: Retrieves a book snippet
-      Handler: dist/guten-snippet
+      Handler: bin/handler/guten-snippet
       Runtime: go1.x
       Tracing: Active
       Events:

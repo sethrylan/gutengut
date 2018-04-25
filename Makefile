@@ -9,7 +9,7 @@ AWS_REGION=us-east-1
 all: test build
 
 build: vet lint
-	go build -o ./dist/$(BINARY_NAME) -v
+	go build -o ./bin/handler/$(BINARY_NAME) -v ./handler/guten-snippet
 # 	@for dir in `ls handler`; do \
 # 		GOOS=linux go build -o dist/handler/$$dir github.com/sbstjn/go-lambda-example/handler/$$dir; \
 # 	done
@@ -18,7 +18,7 @@ clean:
 	go clean
 	@rm -f package.yml
 	@rm -f guten-snippet.zip
-	@rm -rf dist
+	@rm -rf bin
 
 ###### AWS Deployment ######
 configure:
@@ -63,9 +63,9 @@ deps:
 
 # Cross compilation
 build-lambda: clean vet lint
-	GOOS=linux go build -o dist/$(BINARY_NAME)
-	zip $(ARTIFACT_NAME) dist/*
+	GOOS=linux go build -o bin/handler/$(BINARY_NAME) -v ./handler/guten-snippet
+	zip $(ARTIFACT_NAME) bin/*
 build-linux: clean
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o dist/$(BINARY_UNIX) -v
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/handler/$(BINARY_UNIX) -v
 docker-build: clean
 	docker run --rm -it -v "$(GOPATH)":/go -w /go/src/bitbucket.org/rsohlich/makepost golang:latest go build -o "$(BINARY_UNIX)" -v
