@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"io/ioutil"
 	"log"
+	"strings"
+
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -32,10 +34,11 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-
+	parsed := strings.Split(string(body), "\n")
+	parsed = parsed[28:398]
 
 	return events.APIGatewayProxyResponse{
-		Body:       string(body),
+		Body:       strings.Join(parsed, "\n"),
 		StatusCode: 200,
 	}, nil
 
