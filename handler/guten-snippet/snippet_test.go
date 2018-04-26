@@ -21,7 +21,7 @@ func TestHandler(t *testing.T) {
 		// },
 		{
 			request: events.APIGatewayProxyRequest{Body: ""},
-			expect:  "",
+			expect:  ErrBookNotProvided.Error(),
 			err:     ErrBookNotProvided,
 		},
 	}

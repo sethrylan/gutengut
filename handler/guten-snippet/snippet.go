@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"io/ioutil"
 	"log"
@@ -23,19 +24,21 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	// stdout and stderr are sent to AWS CloudWatch Logs
 	log.Printf("Processing Lambda request %s\n", request.RequestContext.RequestID)
 
+	book := request.QueryStringParameters["book"]
 	// If no name is provided in the HTTP request body, throw an error
-	if len(request.QueryStringParameters["book"]) < 1 {
-		return events.APIGatewayProxyResponse{}, ErrBookNotProvided
+	if len(book) < 1 {
+		return events.APIGatewayProxyResponse{Body: ErrBookNotProvided.Error()}, ErrBookNotProvided
 	}
 
-	resp, err := http.Get("http://www.gutenberg.org/files/1661/1661.txt")
+	url := fmt.Sprintf("http://www.gutenberg.org/files/%s/%s.txt", book, book)
+	resp, err := http.Get(url)
 	if err != nil {
 		// handle error
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	parsed := strings.Split(string(body), "\n")
-	parsed = parsed[28:398]
+	parsed = parsed[28:len(parsed)-398]
 
 	return events.APIGatewayProxyResponse{
 		Body:       strings.Join(parsed, "\n"),
