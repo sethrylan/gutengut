@@ -2,6 +2,8 @@ package main
 
 import (
 	"errors"
+	"net/http"
+	"io/ioutil"
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -9,24 +11,31 @@ import (
 )
 
 var (
-	// ErrNameNotProvided is thrown when a name is not provided
-	ErrNameNotProvided = errors.New("no name was provided in the HTTP body")
+	// ErrNameNotProvided is thrown when a book id is not provided
+	ErrBookNotProvided = errors.New("no query parameter 'book'")
 )
 
 // Handler is your Lambda function handler
 // It uses Amazon API Gateway request/responses provided by the aws-lambda-go/events package,
-// However you could use other event sources (S3, Kinesis etc), or JSON-decoded primitive types such as 'string'.
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	// stdout and stderr are sent to AWS CloudWatch Logs
 	log.Printf("Processing Lambda request %s\n", request.RequestContext.RequestID)
 
 	// If no name is provided in the HTTP request body, throw an error
-	// if len(request.Body) < 1 {
-	// 	return events.APIGatewayProxyResponse{}, ErrNameNotProvided
-	// }
+	if len(request.QueryStringParameters["book"]) < 1 {
+		return events.APIGatewayProxyResponse{}, ErrBookNotProvided
+	}
+
+	resp, err := http.Get("http://www.gutenberg.org/files/1661/1661.txt")
+	if err != nil {
+		// handle error
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+
 
 	return events.APIGatewayProxyResponse{
-		Body:       "Hello " + request.QueryStringParameters["blah"],
+		Body:       string(body),
 		StatusCode: 200,
 	}, nil
 

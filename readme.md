@@ -21,4 +21,3 @@
 
 # https://github.com/sbstjn/go-lambda-example/blob/master/Makefile
 
-https://5o7iumx2ue.execute-api.us-east-1.amazonaws.com/prod/snippet?start=1&limit=1

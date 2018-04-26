@@ -2,8 +2,6 @@ package main
 
 import (
 	"testing"
-	// "github.com/sethrylan/gutengut"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/stretchr/testify/assert"
 )
@@ -14,20 +12,18 @@ func TestHandler(t *testing.T) {
 		expect  string
 		err     error
 	}{
-		{
-			// Test that the handler responds with the correct response
-			// when a valid name is provided in the HTTP body
-			request: events.APIGatewayProxyRequest{QueryStringParameters: map[string]string{"blah":"Paul"}},
-			expect:  "Hello Paul",
-			err:     nil,
-		},
 		// {
-		// 	// Test that the handler responds ErrNameNotProvided
-		// 	// when no name is provided in the HTTP body
-		// 	request: events.APIGatewayProxyRequest{Body: ""},
-		// 	expect:  "",
-		// 	err:     main.ErrNameNotProvided,
+		// 	// Test that the handler responds with the correct response
+		// 	// when a valid name is provided in the HTTP body
+		// 	request: events.APIGatewayProxyRequest{QueryStringParameters: map[string]string{"blah":"Paul"}},
+		// 	expect:  "Hello Paul",
+		// 	err:     nil,
 		// },
+		{
+			request: events.APIGatewayProxyRequest{Body: ""},
+			expect:  "",
+			err:     ErrBookNotProvided,
+		},
 	}
 
 	for _, test := range tests {
