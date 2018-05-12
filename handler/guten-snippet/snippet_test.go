@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"testing"
 	"github.com/aws/aws-lambda-go/events"
@@ -26,13 +27,13 @@ func TestHandler(t *testing.T) {
 		expect  string
 		err     error
 	}{
-		// {
-		// 	// Test that the handler responds with the correct response
-		// 	// when a valid name is provided in the HTTP body
-		// 	request: events.APIGatewayProxyRequest{QueryStringParameters: map[string]string{"book":"1661","start":"0","limit":"1"}},
-		// 	expect:  "",
-		// 	err:     nil,
-		// },
+		{
+			// Test that the handler responds with the correct response
+			// when a valid name is provided in the HTTP body
+			request: events.APIGatewayProxyRequest{QueryStringParameters: map[string]string{"book":"1661","start":"0","limit":"1"}},
+			expect:  "",
+			err:     nil,
+		},
 		{
 			request: events.APIGatewayProxyRequest{Body: ""},
 			expect:  ErrBookNotProvided.Error(),
@@ -42,6 +43,7 @@ func TestHandler(t *testing.T) {
 
 	for _, test := range tests {
 		response, err := HandleRequest(test.request, mockClient)
+		log.Printf(response.Body)
 		assert.IsType(t, test.err, err)
 		assert.Equal(t, test.expect, response.Body)
 	}

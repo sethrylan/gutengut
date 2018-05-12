@@ -66,7 +66,7 @@ func HandleRequest(request events.APIGatewayProxyRequest, httpClient HttpClient)
 		// todo handle incorrect slice bounds
 	}
 
-	parsed = parsed[start:len(parsed)+limit]
+	parsed = parsed[start:start+limit]
 
 	return events.APIGatewayProxyResponse{
 		Body:       strings.Join(parsed, "\n"),
