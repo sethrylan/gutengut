@@ -1,24 +1,38 @@
 package main
 
 import (
+	"bytes"
+	"io/ioutil"
+	"net/http"
 	"testing"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/stretchr/testify/assert"
 )
 
+
+type ClientMock struct {
+}
+
+func (c *ClientMock) Get(url string) (*http.Response, error) {
+	testData, _ := ioutil.ReadFile("1661.txt")
+    return &http.Response{Body: ioutil.NopCloser(bytes.NewReader(testData))}, nil
+}
+
 func TestHandler(t *testing.T) {
+	mockClient := &ClientMock{}
+
 	tests := []struct {
 		request events.APIGatewayProxyRequest
 		expect  string
 		err     error
 	}{
-		{
-			// Test that the handler responds with the correct response
-			// when a valid name is provided in the HTTP body
-			request: events.APIGatewayProxyRequest{QueryStringParameters: map[string]string{"book":"1661"}},
-			expect:  "",
-			err:     nil,
-		},
+		// {
+		// 	// Test that the handler responds with the correct response
+		// 	// when a valid name is provided in the HTTP body
+		// 	request: events.APIGatewayProxyRequest{QueryStringParameters: map[string]string{"book":"1661","start":"0","limit":"1"}},
+		// 	expect:  "",
+		// 	err:     nil,
+		// },
 		{
 			request: events.APIGatewayProxyRequest{Body: ""},
 			expect:  ErrBookNotProvided.Error(),
@@ -27,7 +41,7 @@ func TestHandler(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		response, err := Handler(test.request)
+		response, err := HandleRequest(test.request, mockClient)
 		assert.IsType(t, test.err, err)
 		assert.Equal(t, test.expect, response.Body)
 	}
