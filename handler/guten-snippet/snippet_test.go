@@ -30,8 +30,8 @@ func TestHandler(t *testing.T) {
 		{
 			// Test that the handler responds with the correct response
 			// when a valid name is provided in the HTTP body
-			request: events.APIGatewayProxyRequest{QueryStringParameters: map[string]string{"book":"1661","start":"0","limit":"1"}},
-			expect:  "",
+			request: events.APIGatewayProxyRequest{QueryStringParameters: map[string]string{"book":"1661","start":"6","limit":"1"}},
+			expect:  "THE ADVENTURES OF SHERLOCK HOLMES",
 			err:     nil,
 		},
 		{

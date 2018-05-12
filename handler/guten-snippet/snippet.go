@@ -14,6 +14,13 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
+func min(a, b int) int {
+    if a < b {
+        return a
+    }
+    return b
+}
+
 var (
 	// ErrNameNotProvided is thrown when a book id is not provided
 	ErrBookNotProvided = errors.New("no query parameter 'book'")
@@ -59,8 +66,11 @@ func HandleRequest(request events.APIGatewayProxyRequest, httpClient HttpClient)
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)			// Read response body
-	parsed := strings.Split(string(body), "\n")		// and converse to array of lines
+	parsed := strings.Split(string(body), "\n")	    // and converse to array of lines
 	parsed = parsed[28:len(parsed)-398]				// and skip PG boilerplate lines (first 28 and last 398)
+
+	start, limit = min(start, len(parsed)), min(limit, len(parsed)-start)
+
 
 	if start + limit > len(parsed) {
 		// todo handle incorrect slice bounds
