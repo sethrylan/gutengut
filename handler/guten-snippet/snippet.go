@@ -81,6 +81,6 @@ func HandleRequest(request events.APIGatewayProxyRequest, httpClient HttpClient)
 	return events.APIGatewayProxyResponse {
 		Body:       strings.Join(parsed, "\n"),
 		StatusCode: 200,
-		Headers:    map[string]string{"content-type": "text/html"},
+		Headers:    map[string]string{"content-type": "text/plain"},
 	}, nil
 }
