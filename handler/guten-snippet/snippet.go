@@ -69,8 +69,8 @@ func HandleRequest(request events.APIGatewayProxyRequest, httpClient HttpClient)
 	parsed := strings.Split(string(body), "\n")	    // and converse to array of lines
 	parsed = parsed[28:len(parsed)-398]				// and skip PG boilerplate lines (first 28 and last 398)
 
-	start, limit = min(start, len(parsed)), min(limit, len(parsed)-start)
-
+	start = min(start, len(parsed)-1)
+	limit = min(limit, len(parsed)-start)
 
 	if start + limit > len(parsed) {
 		// todo handle incorrect slice bounds
