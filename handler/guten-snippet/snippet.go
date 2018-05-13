@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
@@ -23,7 +22,8 @@ func min(a, b int) int {
 
 var (
 	// ErrNameNotProvided is thrown when a book id is not provided
-	ErrBookNotProvided = errors.New("no query parameter 'book'")
+	ErrBookNotProvided = errors.New("no query parameter 'book'.")
+	ErrOutOfBounds = errors.New("'start' and 'limit' out of bounds.")
 )
 
 type HttpClient interface {
@@ -47,15 +47,11 @@ func main() {
 }
 
 func HandleRequest(request events.APIGatewayProxyRequest, httpClient HttpClient) (events.APIGatewayProxyResponse, error) {
-	book := request.QueryStringParameters["book"]							// Unpack query params;
-	start, errStart := strconv.Atoi(request.QueryStringParameters["start"])	// default to 0 for start
-	limit, errLimit := strconv.Atoi(request.QueryStringParameters["limit"])	// and limit
+	book := request.QueryStringParameters["book"]						// Unpack query params;
+	start, _ := strconv.Atoi(request.QueryStringParameters["start"])	// default to 0 for start
+	limit, _ := strconv.Atoi(request.QueryStringParameters["limit"])	// and limit
 
-	if errStart != nil || errLimit != nil {
-		// handle error
-	}
-
-	if len(book) < 1 {														// If no name is provided in the HTTP request body, throw an error
+	if len(book) < 1 {													// If no name is provided in the HTTP request body, throw an error
 		return events.APIGatewayProxyResponse{Body: ErrBookNotProvided.Error()}, ErrBookNotProvided
 	}
 
@@ -69,14 +65,15 @@ func HandleRequest(request events.APIGatewayProxyRequest, httpClient HttpClient)
 	parsed := strings.Split(string(body), "\n")	    // and converse to array of lines
 	parsed = parsed[28:len(parsed)-398]				// and skip PG boilerplate lines (first 28 and last 398)
 
-	start = min(start, len(parsed)-1)
-	limit = min(limit, len(parsed)-start)
-
 	if start + limit > len(parsed) {
-		// todo handle incorrect slice bounds
+		return events.APIGatewayProxyResponse{Body: ErrOutOfBounds.Error()}, ErrOutOfBounds
 	}
 
-	parsed = parsed[start:start+limit]
+	if limit == 0 {									// if limit is 0
+		parsed = parsed[start:]						// then treat as no limit
+	} else {										// else
+		parsed = parsed[start:start+limit]			// use the passed limit
+	}
 
 	return events.APIGatewayProxyResponse {
 		Body:       strings.Join(parsed, "\n"),

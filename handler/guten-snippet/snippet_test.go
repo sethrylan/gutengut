@@ -35,6 +35,11 @@ func TestHandler(t *testing.T) {
 			err:     nil,
 		},
 		{
+			request: events.APIGatewayProxyRequest{QueryStringParameters: map[string]string{"book":"1661","start":"10000000","limit":"1"}},
+			expect:  ErrOutOfBounds.Error(),
+			err:     ErrOutOfBounds,
+		},
+		{
 			request: events.APIGatewayProxyRequest{Body: ""},
 			expect:  ErrBookNotProvided.Error(),
 			err:     ErrBookNotProvided,
